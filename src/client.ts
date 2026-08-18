@@ -9,20 +9,16 @@
  * 通过 host 自建的 HTTP RPC endpoint 通信（/dsh-toolctl/rpc）。
  */
 
-// client 运行时全局（bundle 插件 builtin）——TS 类型声明
-declare const React: {
-  createElement: (type: unknown, props: Record<string, unknown> | null, ...children: unknown[]) => unknown
-  useState: <T>(initial: T) => [T, (v: T | ((p: T) => T)) => void]
-  useEffect: (effect: () => void | (() => void), deps?: unknown[]) => void
-}
+// React 由 ModuleLoader 的 require('react') 提供（external，不打进 bundle）。
+import React from 'react'
+import type { Context } from '@deepseek-ai/cordis'
+
 // bundle 插件 client 半部没有 styles builtin（那是动态 Cordis 插件沙箱的注入）；
 // 直接操作 DOM 注入 CSS。
 declare const document: {
   createElement: (tag: string) => { textContent: string }
   head: { appendChild: (el: { textContent: string }) => void }
 }
-
-import type { Context } from '@deepseek-ai/cordis'
 
 /** 注入插件样式（bundle client 无 styles builtin，直接建 <style> 节点）。 */
 function injectCss(css: string): void {
