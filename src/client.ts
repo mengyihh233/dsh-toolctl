@@ -143,7 +143,7 @@ function ToolCtlPanel() {
 
 export function apply(ctx: Context): void {
   injectCss(CSS)
-  const slots = ctx.get('slots')
+  const slots = (ctx as unknown as { slots?: { inject: (key: string, cb: () => unknown) => unknown; register: (opts: Record<string, unknown>, fn: () => unknown) => unknown } }).slots
   if (slots === undefined) return
   slots.inject('conversation.session.header.actions', () =>
     slots.register(
