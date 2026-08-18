@@ -1,0 +1,4 @@
+# dsh-toolctl: one global host row registering the tool-control plugin.
+- insert:
+    - id: dsh-toolctl
+      name: dsh-toolctl
