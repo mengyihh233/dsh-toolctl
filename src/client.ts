@@ -15,9 +15,21 @@ declare const React: {
   useState: <T>(initial: T) => [T, (v: T | ((p: T) => T)) => void]
   useEffect: (effect: () => void | (() => void), deps?: unknown[]) => void
 }
-declare const styles: { insert: (css: string) => () => void }
+// bundle 插件 client 半部没有 styles builtin（那是动态 Cordis 插件沙箱的注入）；
+// 直接操作 DOM 注入 CSS。
+declare const document: {
+  createElement: (tag: string) => { textContent: string }
+  head: { appendChild: (el: { textContent: string }) => void }
+}
 
 import type { Context } from '@deepseek-ai/cordis'
+
+/** 注入插件样式（bundle client 无 styles builtin，直接建 <style> 节点）。 */
+function injectCss(css: string): void {
+  const styleEl = document.createElement('style')
+  styleEl.textContent = css
+  document.head.appendChild(styleEl)
+}
 
 // bundle 插件 client 半部无 host.call —— 走 host 自建的 HTTP RPC endpoint
 async function rpc(method: string, args?: Record<string, unknown>): Promise<Record<string, unknown>> {
@@ -130,7 +142,7 @@ function ToolCtlPanel() {
 }
 
 export function apply(ctx: Context): void {
-  styles.insert(CSS)
+  injectCss(CSS)
   const slots = ctx.get('slots')
   if (slots === undefined) return
   slots.inject('conversation.session.header.actions', () =>
